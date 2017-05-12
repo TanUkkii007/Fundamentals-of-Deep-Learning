@@ -8,13 +8,12 @@ n_hidden_1 = 256
 n_hidden_2 = 256
 
 learning_rate = 0.01
-trainig_rate = 0.01
 trainig_epochs = 1000
 batch_size = 100
 display_step = 1
 
 def layer(input, weight_shape, bias_shape):
-    weight_init = tf.random_normal_initializer(stddev=(2.0/weight_shape[0])**2)
+    weight_init = tf.random_normal_initializer(stddev=(2.0/weight_shape[0])**0.5)
     bias_init = tf.constant_initializer(value=0)
     W = tf.get_variable("W", weight_shape, initializer=weight_init)
     b = tf.get_variable("b", bias_shape, initializer=bias_init)
