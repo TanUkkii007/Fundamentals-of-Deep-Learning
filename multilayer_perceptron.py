@@ -51,54 +51,56 @@ def evaluate(output, y):
 if __name__ == '__main__':
     with tf.Graph().as_default():
 
-        x = tf.placeholder("float", [None, 784])
-        y = tf.placeholder("float", [None, 10])
+        with tf.variable_scope("mlp_model"):
 
-        output = inference(x)
-
-        cost = loss(output, y)
-
-        global_step = tf.Variable(0, name='global_step', trainable=False)
-
-        train_op = training(cost, global_step)
-
-        eval_op = evaluate(output, y)
-
-        summary_op = tf.summary.merge_all()
-
-        saver = tf.train.Saver()
-
-        sess = tf.Session()
-
-        summary_writer = tf.summary.FileWriter("mlp_logs/", graph=sess.graph)
-
-        init_op = tf.global_variables_initializer()
-
-        sess.run(init_op)
-
-        for epoch in range(trainig_epochs):
-
-            avg_cost = 0.
-            total_batch = int(mnist.train.num_examples/batch_size)
-
-            for i in range(total_batch):
-                minibatch_x, minibatch_y = mnist.train.next_batch(batch_size)
-                sess.run(train_op, feed_dict={x: minibatch_x, y: minibatch_y})
-                avg_cost += sess.run(cost, feed_dict={x: minibatch_x, y: minibatch_y})/total_batch
-
-            if epoch % display_step == 0:
-                print("Epoch:", '%04d' % (epoch+1), "cost =", "{:.9f}".format(avg_cost))
-
-                accuracy = sess.run(eval_op, feed_dict={x: mnist.validation.images, y: mnist.validation.labels})
-
-                print("Validation Error:", (1 - accuracy))
-
-                summary_str = sess.run(summary_op, feed_dict={x: minibatch_x, y: minibatch_y})
-                summary_writer.add_summary(summary_str, sess.run(global_step))
-
-                saver.save(sess, "mlp_logs/model-checkpoint", global_step=global_step)
-        print("Optimization Finished!")
-
-        accuracy = sess.run(eval_op, feed_dict={x: mnist.test.images, y: mnist.test.labels})
-
-        print("Test Accuracy:", accuracy)
+            x = tf.placeholder("float", [None, 784])
+            y = tf.placeholder("float", [None, 10])
+        
+            output = inference(x)
+        
+            cost = loss(output, y)
+        
+            global_step = tf.Variable(0, name='global_step', trainable=False)
+        
+            train_op = training(cost, global_step)
+        
+            eval_op = evaluate(output, y)
+        
+            summary_op = tf.summary.merge_all()
+        
+            saver = tf.train.Saver()
+        
+            sess = tf.Session()
+        
+            summary_writer = tf.summary.FileWriter("mlp_logs/", graph=sess.graph)
+        
+            init_op = tf.global_variables_initializer()
+        
+            sess.run(init_op)
+        
+            for epoch in range(trainig_epochs):
+            
+                avg_cost = 0.
+                total_batch = int(mnist.train.num_examples/batch_size)
+            
+                for i in range(total_batch):
+                    minibatch_x, minibatch_y = mnist.train.next_batch(batch_size)
+                    sess.run(train_op, feed_dict={x: minibatch_x, y: minibatch_y})
+                    avg_cost += sess.run(cost, feed_dict={x: minibatch_x, y: minibatch_y})/total_batch
+                
+                if epoch % display_step == 0:
+                    print("Epoch:", '%04d' % (epoch+1), "cost =", "{:.9f}".format(avg_cost))
+                
+                    accuracy = sess.run(eval_op, feed_dict={x: mnist.validation.images, y: mnist.validation.labels})
+                
+                    print("Validation Error:", (1 - accuracy))
+                
+                    summary_str = sess.run(summary_op, feed_dict={x: minibatch_x, y: minibatch_y})
+                    summary_writer.add_summary(summary_str, sess.run(global_step))
+                
+                    saver.save(sess, "mlp_logs/model-checkpoint", global_step=global_step)
+            print("Optimization Finished!")
+        
+            accuracy = sess.run(eval_op, feed_dict={x: mnist.test.images, y: mnist.test.labels})
+        
+            print("Test Accuracy:", accuracy)
